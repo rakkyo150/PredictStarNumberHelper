@@ -1,6 +1,5 @@
 import pandas as pd
 import matplotlib.pyplot as plt
-from sklearn.linear_model import LinearRegression
 from sklearn.neural_network import MLPRegressor
 from sklearn.model_selection import train_test_split
 from sklearn.model_selection import GridSearchCV
@@ -9,18 +8,19 @@ import pickle
 import requests
 import io
 import json
+import os
 
-'''
 githubEndpoint = "https://api.github.com/repos/rakkyo150/RankedMapData/releases/latest"
-githubResponse = requests.get(url=githubEndpoint)
+headers={'Authorization': f'token {os.environ["GITHUB_TOKEN"]}'}
+githubResponse = requests.get(url=githubEndpoint,headers=headers)
 releaseJson = githubResponse.json()
 secondHeaders = {'Accept': 'application/octet-stream'}
 csvResponse = requests.get(url=releaseJson["assets"][0]["browser_download_url"],
                            headers=secondHeaders)
 df = pd.read_csv(io.BytesIO(csvResponse.content), sep=",", index_col=0, encoding="utf-8")
-'''
 
-df=pd.read_csv("outcome.csv",index_col=0,encoding="utf-8")
+# For local run
+# df=pd.read_csv("outcome.csv",index_col=0,encoding="utf-8")
 
 # 必要なカラムを選択
 df=df[['bpm','duration','difficulty','sageScore','njs',

@@ -95,7 +95,6 @@ tuned_model=GridSearchCV(estimator=estimator,
                          return_train_score=False)
 
 tuned_model.fit(x_train_val,t_train_val)
-pd.DataFrame(tuned_model.cv_results_).to_csv("result.csv")
 
 print(tuned_model.best_params_)
 model=tuned_model.best_estimator_

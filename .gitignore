@@ -1,7 +1,6 @@
-/coef.png
-/corr.png
-/dataframe.png
+/correlation.png
+/meanStd.csv
 /model.pickle
 /modelScore.json
-/normalizeDataframe.png
 /outcome.csv
+/result.csv

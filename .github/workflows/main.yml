@@ -43,6 +43,7 @@ jobs:
           set -x
           assets=()
           assets+=("-a" "./correlation.png")
+          assets+=("-a" "./describe.json")
           assets+=("-a" "./meanStd.csv")
           assets+=("-a" "./modelScore.json")
           assets+=("-a" "./model.pickle")

@@ -10,6 +10,7 @@ import io
 import json
 import os
 
+
 githubEndpoint = "https://api.github.com/repos/rakkyo150/RankedMapData/releases/latest"
 headers={'Authorization': f'token {os.environ["GITHUB_TOKEN"]}'}
 githubResponse = requests.get(url=githubEndpoint,headers=headers)
@@ -56,6 +57,10 @@ df.loc[df['difficulty']=="Expert",'difficulty']=3
 df.loc[df['difficulty']=="ExpertPlus",'difficulty']=4
 print(df['difficulty'].value_counts())
 
+describe=df.describe()
+print(describe)
+with open('./describe.json',mode='w') as f:
+    describe.to_json(f,indent=4)
 
 meanStd=pd.DataFrame({'mean':df.mean(),'std':df.std()})
 print(meanStd)

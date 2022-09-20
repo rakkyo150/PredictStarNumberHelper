@@ -100,7 +100,7 @@ with open('./standardScaler.pickle', mode='wb') as f:
 # "trainScore": 0.8958441039360735
 # "testScore": 0.9074964858127781
 
-
+# 学習ではRMSEを指標にしてるっぽい
 estimator = MLPRegressor(random_state=0, max_iter=1000, solver="adam", activation="relu",
                          verbose=True)
 param_grid = [{

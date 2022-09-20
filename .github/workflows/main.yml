@@ -44,8 +44,8 @@ jobs:
           assets=()
           assets+=("-a" "./correlation.png")
           assets+=("-a" "./describe.json")
-          assets+=("-a" "./meanStd.csv")
-          assets+=("-a" "./modelScore.json")
+          assets+=("-a" "./standardScaler.pickle")
+          assets+=("-a" "./modelEvaluation.json")
           assets+=("-a" "./model.pickle")
           tag_name=`date '+%Y%m%d%H%M'`
           hub release create "${assets[@]}" -m "Latest" "$tag_name"

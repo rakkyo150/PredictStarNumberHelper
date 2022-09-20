@@ -3,6 +3,8 @@ import matplotlib.pyplot as plt
 from sklearn.neural_network import MLPRegressor
 from sklearn.model_selection import train_test_split
 from sklearn.model_selection import GridSearchCV
+from sklearn.metrics import mean_squared_error
+import numpy as np
 import seaborn as sns
 import pickle
 import requests
@@ -25,7 +27,7 @@ df = pd.read_csv(io.BytesIO(csvResponse.content), sep=",", index_col=0, encoding
 
 # 必要なカラムを選択
 df=df[['bpm','duration','difficulty','sageScore','njs',
-       'offset','notes','bombs','obstacles','nps','events','chroma','warns',
+       'offset','notes','bombs','obstacles','nps','events','chroma','errors','warns',
        'resets','stars']]
 
 '''
@@ -57,17 +59,16 @@ df.loc[df['difficulty']=="Expert",'difficulty']=3
 df.loc[df['difficulty']=="ExpertPlus",'difficulty']=4
 print(df['difficulty'].value_counts())
 
-describe=df.describe()
+# 型がobjectになっているので
+df['difficulty'] = df['difficulty'].astype('float64')
+
+describe = df.describe()
 print(describe)
+
+print(df.dtypes)
+
 with open('./describe.json',mode='w') as f:
     describe.to_json(f,indent=4)
-
-meanStd=pd.DataFrame({'mean':df.mean(),'std':df.std()})
-print(meanStd)
-meanStd.to_csv("meanStd.csv")
-
-# 標準化
-df = (df - df.mean()) / df.std()
 
 # データセット分割
 t=df['stars'].values
@@ -75,9 +76,20 @@ x=df.drop(labels=['stars'],axis=1).values
 columns=df.drop(labels=['stars'],axis=1).columns
 
 x_train_val,x_test,t_train_val,t_test=train_test_split(x,t,test_size=0.2,random_state=0)
-x_train,x_val,t_train,t_val=train_test_split(x_train_val,t_train_val,test_size=0.3,random_state=0)
 
 print(x_test.shape)
+
+# 標準化
+from sklearn.preprocessing import StandardScaler
+standardScaler=StandardScaler()
+normalized_x_train_val=standardScaler.fit_transform(x_train_val)
+
+print(standardScaler.mean_)
+print(standardScaler.var_)
+normalized_x_test=(x_test-standardScaler.mean_)/np.sqrt(standardScaler.var_)
+
+with open('./standardScaler.pickle', mode='wb') as f:
+    pickle.dump(standardScaler, f)
 
 # 学習
 # model=MLPRegressor(random_state=0,max_iter=10000)
@@ -89,9 +101,11 @@ print(x_test.shape)
 # "testScore": 0.9074964858127781
 
 
-estimator=MLPRegressor(random_state=0,max_iter=10000,solver="adam",activation="relu")
+estimator=MLPRegressor(random_state=0,max_iter=1000,solver="adam",activation="relu",verbose=True)
 param_grid=[{
-    'hidden_layer_sizes':[590,600,610],
+    'solver':['sgd'],
+    'max_iter':[1000],
+    'hidden_layer_sizes':[1500],
 }]
 cv=5
 tuned_model=GridSearchCV(estimator=estimator,
@@ -99,29 +113,44 @@ tuned_model=GridSearchCV(estimator=estimator,
                          cv=cv,
                          return_train_score=False)
 
-tuned_model.fit(x_train_val,t_train_val)
+tuned_model.fit(normalized_x_train_val,t_train_val)
 
 print(tuned_model.best_params_)
 model=tuned_model.best_estimator_
 
 
-# print(f'train score: {model.score(x_train,t_train)}')
-print(f'train score: {model.score(x_train_val,t_train_val)}')
-print(f'test score: {model.score(x_test,t_test)}')
+train_pred=model.predict(normalized_x_train_val)
+pred = model.predict(normalized_x_test)
 
-pred = model.predict(x_test)
-for i in range(x_test.shape[0]):
+# old bad way
+# train RMSE: 0.5417871476868293
+# test RMSE: 0.8000724981830256
+# train score: 0.9683632363282518
+# test score: 0.9332618120022189
+
+print(f'train RMSE: {np.sqrt(mean_squared_error(t_train_val,train_pred))}')
+print(f'test RMSE: {np.sqrt(mean_squared_error(t_test, pred))}')
+print(f'train score: {model.score(normalized_x_train_val,t_train_val)}')
+print(f'test score: {model.score(normalized_x_test,t_test)}')
+
+# new appropriate way
+# train RMSE: 0.6312606845960649
+# test RMSE: 0.7419870097808028
+# train score: 0.9570510908896043
+# test score: 0.9426004707446569
+
+for i in range(t_test.shape[0]):
     c = t_test[i]
     p = pred[i]
     print('[{0}] correct:{1:.3f}, predict:{2:.3f} ({3:.3f})'.format(i, c, p, c-p))
 
-
-
 str={
+    'train RMSE': np.sqrt(mean_squared_error(t_train_val,train_pred)),
+    'test RMSE': np.sqrt(mean_squared_error(t_test, pred)),
     "trainScore":model.score(x_train_val,t_train_val),
     "testScore":model.score(x_test,t_test)
 }
-with open('./modelScore.json',mode='w') as f:
+with open('./modelEvaluation.json',mode='w') as f:
     json.dump(str,f,indent=4)
 
 

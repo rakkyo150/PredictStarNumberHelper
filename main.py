@@ -147,8 +147,8 @@ for i in range(t_test.shape[0]):
 str = {
     'train RMSE': np.sqrt(mean_squared_error(t_train_val, train_pred)),
     'test RMSE': np.sqrt(mean_squared_error(t_test, pred)),
-    "trainScore": model.score(x_train_val, t_train_val),
-    "testScore": model.score(x_test, t_test)
+    "trainScore": model.score(normalized_x_train_val, t_train_val),
+    "testScore": model.score(normalized_x_test, t_test)
 }
 with open('./modelEvaluation.json', mode='w') as f:
     json.dump(str, f, indent=4)

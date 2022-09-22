@@ -55,5 +55,5 @@ def json_to_png_for_evaluation(path: str):
     fig.show()
     fig.savefig('modelEvaluation.png', dpi=fig.dpi)
     
-json_to_png_for_describe('describe.json')
-json_to_png_for_evaluation('modelEvaluation.json')
+# json_to_png_for_describe('describe.json')
+# json_to_png_for_evaluation('modelEvaluation.json')

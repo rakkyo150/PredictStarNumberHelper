@@ -31,6 +31,7 @@ def json_to_png_for_describe(path: str):
 
     table.set_fontsize(20)
     table.scale(1, 20)
+    fig.show()
     fig.savefig('describe.png', dpi=fig.dpi)
 
 
@@ -51,4 +52,8 @@ def json_to_png_for_evaluation(path: str):
 
     table.set_fontsize(20)
     table.scale(1, 20)
+    fig.show()
     fig.savefig('modelEvaluation.png', dpi=fig.dpi)
+    
+json_to_png_for_describe('describe.json')
+json_to_png_for_evaluation('modelEvaluation.json')

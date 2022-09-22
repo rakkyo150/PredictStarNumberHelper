@@ -19,7 +19,7 @@ def json_to_png_for_describe(path: str):
 
     data_array = np.array(data_list)
 
-    fig = plt.figure(figsize=(50, 70), dpi=100)
+    fig = plt.figure(figsize=(80, 60), dpi=100)
     plt.axis('off')
     # 表を描写
     table = plt.table(
@@ -29,9 +29,8 @@ def json_to_png_for_describe(path: str):
         cellLoc='center',
         loc='center')  # デフォルトはグラフの下に表示なので、centerを指定して中央に設定
 
-    table.set_fontsize(20)
-    table.scale(1, 20)
-    fig.show()
+    table.set_fontsize(100)
+    table.scale(1, 15)
     fig.savefig('describe.png', dpi=fig.dpi)
 
 
@@ -42,7 +41,7 @@ def json_to_png_for_evaluation(path: str):
     col_label_array = np.array(list(json_obj.keys()))
     data_array = np.array([list(json_obj.values())])
 
-    fig = plt.figure(figsize=(50, 70), dpi=100)
+    fig = plt.figure(figsize=(10, 5), dpi=300)
     plt.axis('off')
     table = plt.table(
         cellText=np.round(data_array, 2),
@@ -50,9 +49,8 @@ def json_to_png_for_evaluation(path: str):
         cellLoc='center',
         loc='center')
 
-    table.set_fontsize(20)
-    table.scale(1, 20)
-    fig.show()
+    table.set_fontsize(100)
+    table.scale(1, 5)
     fig.savefig('modelEvaluation.png', dpi=fig.dpi)
     
 # json_to_png_for_describe('describe.json')

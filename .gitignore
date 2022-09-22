@@ -5,3 +5,6 @@
 /result.csv
 /describe.json
 /pdFor.py
+/__pycache__
+/modelEvaluation.json
+/standardScaler.pickle

@@ -162,3 +162,7 @@ plt.close()
 # 学習済みモデルを保存
 with open('./model.pickle', mode='wb') as f:
     pickle.dump(model, f)
+
+import image_maker
+image_maker.json_to_png_for_describe('describe.png')
+image_maker.json_to_png_for_evaluation('modelEvaluation.json')

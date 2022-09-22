@@ -8,3 +8,6 @@ This creates a model for [PredictStarNumber](https://github.com/rakkyo150/Predic
 
 ## Correlation Matrix
 ![Correlation Matrix](correlation.png)
+
+## Model Evaluation
+![Model Evaluation](modelEvaluation.png)

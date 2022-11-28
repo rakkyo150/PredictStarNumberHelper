@@ -1,6 +1,5 @@
-wheel
 requests
 pandas
-sklearn
+scikit-learn
 matplotlib
 seaborn

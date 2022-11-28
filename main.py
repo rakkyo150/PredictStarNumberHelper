@@ -145,10 +145,10 @@ for i in range(t_test.shape[0]):
     print('[{0}] correct:{1:.3f}, predict:{2:.3f} ({3:.3f})'.format(i, c, p, c - p))
 
 str = {
-    'train RMSE': np.sqrt(mean_squared_error(t_train_val, train_pred)),
-    'test RMSE': np.sqrt(mean_squared_error(t_test, pred)),
-    "trainScore": model.score(normalized_x_train_val, t_train_val),
-    "testScore": model.score(normalized_x_test, t_test)
+    'Train RMSE': np.sqrt(mean_squared_error(t_train_val, train_pred)),
+    'Test RMSE': np.sqrt(mean_squared_error(t_test, pred)),
+    "Train Score": model.score(normalized_x_train_val, t_train_val),
+    "Test Score": model.score(normalized_x_test, t_test)
 }
 with open('./modelEvaluation.json', mode='w') as f:
     json.dump(str, f, indent=4)

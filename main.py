@@ -190,10 +190,10 @@ print("Output type  :", output_type)
 
 input_name = sess.get_inputs()[0].name
 output_name = sess.get_outputs()[0].name
-
 print(x_train_val[0])
 convert_test_data = [x_train_val[0]]
-print("Test input : " + convert_test_data)
-print("Pickle output : " + model.predict(convert_test_data))
-b=sess.run([output_name], {input_name: convert_test_data})
-print("Onnx output : " + b[0])
+print("Test input : " + ", ".join(map(str, convert_test_data)))
+pickle_result = model.predict(convert_test_data)
+print("Pickle output : " + ", ".join(map(str, pickle_result)))
+onnx_result = sess.run([output_name], {input_name: convert_test_data})
+print("Onnx output : " + ", ".join(map(str, onnx_result[0])))

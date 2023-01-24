@@ -137,14 +137,14 @@ for i in range(t_test.shape[0]):
     p = pred[i]
     print('[{0}] correct:{1:.3f}, predict:{2:.3f} ({3:.3f})'.format(i, c, p, c - p))
 
-str = {
+model_evaluation = {
     'Train RMSE': np.sqrt(mean_squared_error(t_train_val, train_pred)),
     'Test RMSE': np.sqrt(mean_squared_error(t_test, pred)),
     "Train Score": model.score(x_train_val, t_train_val),
     "Test Score": model.score(x_test, t_test)
 }
 with open('./modelEvaluation.json', mode='w') as f:
-    json.dump(str, f, indent=4)
+    json.dump(model_evaluation, f, indent=4)
 
 # 多重共線性(入力変数同士の相関)の確認
 plt.figure(tight_layout=True, figsize=[9.6, 8])

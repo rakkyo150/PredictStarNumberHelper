@@ -35,11 +35,11 @@ jobs:
         run: |
           set -x
           assets=()
+          assets+=("-a" "./model.onnx")
+          assets+=("-a" "./model.pickle")
           assets+=("-a" "./correlation.png")
           assets+=("-a" "./describe.json")
-          assets+=("-a" "./standardScaler.pickle")
           assets+=("-a" "./modelEvaluation.json")
-          assets+=("-a" "./model.pickle")
           tag_name=`date '+%Y%m%d%H%M'`
           hub release create "${assets[@]}" -m "Latest" "$tag_name"
         env:

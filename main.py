@@ -15,17 +15,17 @@ from sklearn.neural_network import MLPRegressor
 githubEndpoint = "https://api.github.com/repos/rakkyo150/RankedMapData/releases/latest"
 headers = {'Authorization': f'token {os.environ["GITHUB_TOKEN"]}'}
 githubResponse = requests.get(url=githubEndpoint, headers=headers)
+# For local run, uncomment below code
+# githubResponse = requests.get(url=githubEndpoint)
 releaseJson = githubResponse.json()
 secondHeaders = {'Accept': 'application/octet-stream'}
 csvResponse = requests.get(url=releaseJson["assets"][0]["browser_download_url"],
                            headers=secondHeaders)
 df = pd.read_csv(io.BytesIO(csvResponse.content), sep=",", index_col=0, encoding="utf-8")
 
-# For local run
-# df=pd.read_csv("outcome.csv",index_col=0,encoding="utf-8")
 
 # 必要なカラムを選択
-df = df[['bpm', 'duration', 'difficulty', 'sageScore', 'njs',
+df = df[['bpm', 'duration', 'difficulty', 'njs',
          'offset', 'notes', 'bombs', 'obstacles', 'nps', 'events', 'chroma', 'errors', 'warns',
          'resets', 'stars']]
 
@@ -78,20 +78,6 @@ x_train_val, x_test, t_train_val, t_test = train_test_split(x, t, test_size=0.2,
 
 print(x_test.shape)
 
-# 標準化
-from sklearn.preprocessing import StandardScaler
-
-standardScaler = StandardScaler()
-normalized_x_train_val = standardScaler.fit_transform(x_train_val)
-
-print(standardScaler.mean_)
-print(standardScaler.var_)
-normalized_x_test = (x_test - standardScaler.mean_) / np.sqrt(standardScaler.var_)
-
-with open('./standardScaler.pickle', mode='wb') as f:
-    pickle.dump(standardScaler, f)
-
-# 学習
 # model=MLPRegressor(random_state=0,max_iter=10000)
 # train score: 0.9634951347836535
 # test score: 0.9373156381840932
@@ -100,27 +86,34 @@ with open('./standardScaler.pickle', mode='wb') as f:
 # "trainScore": 0.8958441039360735
 # "testScore": 0.9074964858127781
 
-# 学習ではRMSEを指標にしてるっぽい
-estimator = MLPRegressor(random_state=0, max_iter=1000, solver="adam", activation="relu",
-                         verbose=True)
+from sklearn.preprocessing import StandardScaler
+from sklearn.pipeline import Pipeline
+
+pipe = Pipeline(steps=[("standard_scaler",StandardScaler()),
+                       ("estimator", MLPRegressor(random_state=0, max_iter=1000, solver="adam",
+                        activation="relu", verbose=True))])
+from sklearn import set_config
+set_config(display='diagram')
+print(pipe)
+
 param_grid = [{
-    'solver': ['sgd'],
-    'max_iter': [1000],
-    'hidden_layer_sizes': [1500],
+    'estimator__solver': ['sgd'],
+    'estimator__max_iter': [1000],
+    'estimator__hidden_layer_sizes': [1500],
 }]
 cv = 5
-tuned_model = GridSearchCV(estimator=estimator,
+tuned_model = GridSearchCV(estimator=pipe,
                            param_grid=param_grid,
                            cv=cv,
                            return_train_score=False)
 
-tuned_model.fit(normalized_x_train_val, t_train_val)
+tuned_model.fit(x_train_val,t_train_val)
 
 print(tuned_model.best_params_)
 model = tuned_model.best_estimator_
 
-train_pred = model.predict(normalized_x_train_val)
-pred = model.predict(normalized_x_test)
+train_pred = model.predict(x_train_val)
+pred = model.predict(x_test)
 
 # old bad way
 # train RMSE: 0.5417871476868293
@@ -130,8 +123,8 @@ pred = model.predict(normalized_x_test)
 
 print(f'train RMSE: {np.sqrt(mean_squared_error(t_train_val, train_pred))}')
 print(f'test RMSE: {np.sqrt(mean_squared_error(t_test, pred))}')
-print(f'train score: {model.score(normalized_x_train_val, t_train_val)}')
-print(f'test score: {model.score(normalized_x_test, t_test)}')
+print(f'train score: {model.score(x_train_val, t_train_val)}')
+print(f'test score: {model.score(x_test, t_test)}')
 
 # new appropriate way
 # train RMSE: 0.6312606845960649
@@ -147,8 +140,8 @@ for i in range(t_test.shape[0]):
 str = {
     'Train RMSE': np.sqrt(mean_squared_error(t_train_val, train_pred)),
     'Test RMSE': np.sqrt(mean_squared_error(t_test, pred)),
-    "Train Score": model.score(normalized_x_train_val, t_train_val),
-    "Test Score": model.score(normalized_x_test, t_test)
+    "Train Score": model.score(x_train_val, t_train_val),
+    "Test Score": model.score(x_test, t_test)
 }
 with open('./modelEvaluation.json', mode='w') as f:
     json.dump(str, f, indent=4)
@@ -166,3 +159,41 @@ with open('./model.pickle', mode='wb') as f:
 import image_maker
 image_maker.json_to_png_for_describe('describe.json')
 image_maker.json_to_png_for_evaluation('modelEvaluation.json')
+
+with open('./model.pickle', mode='rb') as f:
+    model = pickle.load(f)
+
+# Start to convert pickle into ONNX format
+from skl2onnx import to_onnx
+onx = to_onnx(model, np.array(x_train_val)[1:])
+
+with open("model.onnx", "wb") as f:
+    f.write(onx.SerializeToString())
+
+import onnxruntime as rt
+sess = rt.InferenceSession("model.onnx")
+
+"""
+input_name = sess.get_inputs()[0].name
+print("Input name  :", input_name)
+input_shape = sess.get_inputs()[0].shape
+print("Input shape :", input_shape)
+input_type = sess.get_inputs()[0].type
+print("Input type  :", input_type)
+output_name = sess.get_outputs()[0].name
+print("Output name  :", output_name)
+output_shape = sess.get_outputs()[0].shape
+print("Output shape :", output_shape)
+output_type = sess.get_outputs()[0].type
+print("Output type  :", output_type)
+"""
+
+input_name = sess.get_inputs()[0].name
+output_name = sess.get_outputs()[0].name
+
+print(x_train_val[0])
+convert_test_data = [x_train_val[0]]
+print("Test input : " + convert_test_data)
+print("Pickle output : " + model.predict(convert_test_data))
+b=sess.run([output_name], {input_name: convert_test_data})
+print("Onnx output : " + b[0])

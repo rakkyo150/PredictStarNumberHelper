@@ -1,5 +1,6 @@
 /meanStd.csv
 /model.pickle
+/model.onnx
 /modelScore.json
 /outcome.csv
 /result.csv
@@ -8,3 +9,4 @@
 /__pycache__
 /modelEvaluation.json
 /standardScaler.pickle
+/old_main.py

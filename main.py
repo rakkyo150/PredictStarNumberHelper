@@ -25,7 +25,7 @@ df = pd.read_csv(io.BytesIO(csvResponse.content), sep=",", index_col=0, encoding
 
 
 # 必要なカラムを選択
-df = df[['bpm', 'duration', 'difficulty', 'njs',
+df = df[['bpm', 'duration', 'difficulty', 'sageScore', 'njs',
          'offset', 'notes', 'bombs', 'obstacles', 'nps', 'events', 'chroma', 'errors', 'warns',
          'resets', 'stars']]
 

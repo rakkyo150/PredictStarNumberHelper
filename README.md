@@ -18,6 +18,8 @@ flowchart
     Third <-- REST API --> PredictStarNumberExtension
 ```
 
+The following is the result of the analysis after removing inappropriate data for machine learning, and is not the result of data analysis of all ranked scores.
+
 ## Describe
 ![Describe](describe.png)
 

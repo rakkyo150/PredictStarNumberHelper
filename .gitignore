@@ -1,6 +1,5 @@
 /meanStd.csv
 /model.pickle
-/model.onnx
 /modelScore.json
 /outcome.csv
 /result.csv

@@ -35,13 +35,13 @@ jobs:
         run: |
           set -x
           assets=()
-          assets+=("-a" "./model.onnx")
-          assets+=("-a" "./model.pickle")
-          assets+=("-a" "./correlation.png")
-          assets+=("-a" "./describe.json")
-          assets+=("-a" "./modelEvaluation.json")
+          assets+=("./model.onnx")
+          assets+=("./model.pickle")
+          assets+=("./correlation.png")
+          assets+=("./describe.json")
+          assets+=("./modelEvaluation.json")
           tag_name=`date '+%Y%m%d%H%M'`
-          hub release create "${assets[@]}" -m "Latest" "$tag_name"
+          gh release create "$tag_name" "${assets[@]}" -t "Latest"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

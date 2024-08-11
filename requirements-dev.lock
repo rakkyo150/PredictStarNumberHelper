@@ -28,6 +28,8 @@ humanfriendly==10.0
     # via coloredlogs
 idna==3.7
     # via requests
+importlib-resources==6.4.0
+    # via matplotlib
 joblib==1.4.2
     # via scikit-learn
 kiwisolver==1.4.5
@@ -54,7 +56,7 @@ onnx==1.16.2
     # via skl2onnx
 onnxconverter-common==1.13.0
     # via skl2onnx
-onnxruntime==1.18.1
+onnxruntime==1.13.1
     # via predictstarnumberhelper
 packaging==24.1
     # via matplotlib
@@ -83,7 +85,7 @@ requests==2.32.3
 scikit-learn==1.5.1
     # via predictstarnumberhelper
     # via skl2onnx
-scipy==1.14.0
+scipy==1.13.1
     # via scikit-learn
 seaborn==0.13.2
     # via predictstarnumberhelper
@@ -99,3 +101,5 @@ tzdata==2024.1
     # via pandas
 urllib3==2.2.2
     # via requests
+zipp==3.20.0
+    # via importlib-resources

@@ -71,6 +71,8 @@ protobuf==5.27.3
     # via onnxruntime
 pyparsing==3.1.2
     # via matplotlib
+pyreadline3==3.4.1
+    # via humanfriendly
 python-dateutil==2.9.0.post0
     # via matplotlib
     # via pandas

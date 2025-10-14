@@ -98,8 +98,8 @@ print(pipe)
 
 param_grid = [{
     'estimator__solver': ['sgd'],
-    'estimator__max_iter': [10],
-    'estimator__hidden_layer_sizes': [15],
+    'estimator__max_iter': [1000],
+    'estimator__hidden_layer_sizes': [1500],
 }]
 cv = 5
 tuned_model = GridSearchCV(estimator=pipe,

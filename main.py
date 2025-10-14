@@ -98,8 +98,8 @@ print(pipe)
 
 param_grid = [{
     'estimator__solver': ['sgd'],
-    'estimator__max_iter': [1000],
-    'estimator__hidden_layer_sizes': [1500],
+    'estimator__max_iter': [10],
+    'estimator__hidden_layer_sizes': [15],
 }]
 cv = 5
 tuned_model = GridSearchCV(estimator=pipe,
@@ -166,6 +166,7 @@ with open('./model.pickle', mode='rb') as f:
 # Start to convert pickle into ONNX format
 from skl2onnx import to_onnx
 onx = to_onnx(model, np.array(x_train_val)[1:])
+onx.ir_version=8
 
 with open("model.onnx", "wb") as f:
     f.write(onx.SerializeToString())

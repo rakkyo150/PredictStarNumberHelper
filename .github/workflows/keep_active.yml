@@ -23,6 +23,6 @@ jobs:
             echo `date +%Y%m%d%H%M%S` > version.txt
 
       - name: Auto Commit
-        uses: stefanzweifel/git-auto-commit-action@v3.0.0
+        uses: stefanzweifel/git-auto-commit-action@v6
         with:
           commit_message: Auto Commit

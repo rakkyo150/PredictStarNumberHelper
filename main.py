@@ -166,7 +166,6 @@ with open('./model.pickle', mode='rb') as f:
 # Start to convert pickle into ONNX format
 from skl2onnx import to_onnx
 onx = to_onnx(model, np.array(x_train_val)[1:])
-onx.ir_version=8
 
 with open("model.onnx", "wb") as f:
     f.write(onx.SerializeToString())
